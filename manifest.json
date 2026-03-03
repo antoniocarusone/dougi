@@ -1,0 +1,19 @@
+{
+  "name": "Dougi",
+  "short_name": "Dougi",
+  "description": "Baker's percentage dough and temperature calculator",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#131313",
+  "theme_color": "#131313",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "utilities", "productivity"]
+}
