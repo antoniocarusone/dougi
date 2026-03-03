@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#131313">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Bool">
+  <title>Bool</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page:   #0d0d0d;
+      --bg-outer:  #131313;
+      --bg-card:   #161616;
+      --bg-input:  #1b1b1b;
+      --bg-tab-on: #323232;
+      --c-primary: #ffffff;
+      --c-sec:     #9e9e9e;
+      --c-dim:     #6c6c6c;
+      --c-accent:  #33aed4;
+      --c-output:  #c26bd2;
+      --c-border:  #2b2b2b;
+      --c-toggle:  #42a18c;
+      --font: 'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-page);
+      font-family: var(--font);
+      color: var(--c-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 12px;
+      min-height: 100dvh;
+    }
+
+    /* ── App shell ────────────────────────────────────────── */
+    .app {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--bg-outer);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    .header {
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 40px 30px;
+    }
+
+    .nav { display: flex; gap: 8px; }
+
+    .nav-tab {
+      font-family: var(--font);
+      font-size: 11px;
+      padding: 0 16px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      border: 1px solid var(--c-border);
+      cursor: pointer;
+      color: var(--c-sec);
+      background: transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      letter-spacing: 0;
+    }
+    .nav-tab.active {
+      background: var(--bg-tab-on);
+      border-color: transparent;
+      color: var(--c-primary);
+    }
+    .nav-tab:not(.active):hover {
+      background: var(--bg-input);
+      color: var(--c-primary);
+    }
+
+    .print-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 0; display: flex; align-items: center;
+    }
+    .print-btn svg {
+      transition: stroke 0.15s;
+      cursor: pointer;
+    }
+    .print-btn:hover svg {
+      stroke: #9e9e9e;
+    }
+    .preset-trigger {
+      transition: stroke 0.15s;
+      cursor: pointer;
+    }
+    .preset-trigger:hover {
+      stroke: #9e9e9e;
+    }
+
+    /* ── Unit toggle bar (temperature tab) ───────────────── */
+    .unit-bar {
+      padding: 0 40px;
+      background: var(--bg-card);
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .unit-pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--c-toggle);
+      border-radius: 13px;
+      padding: 2px;
+      gap: 0;
+      height: 20px;
+    }
+    .unit-btn {
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0 8px;
+      height: 16px;
+      line-height: 16px;
+      border-radius: 11px;
+      border: none;
+      background: transparent;
+      color: var(--bg-card);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .unit-btn.active {
+      background: var(--bg-card);
+      color: var(--c-toggle);
+    }
+
+    /* ── Section grid (Input row / Output row / Temp) ────── */
+    .section {
+      display: grid;
+      gap: 0;
+      padding: 10px 20px 20px;
+    }
+    .section-input  { background: var(--bg-card); grid-template-columns: repeat(4, 1fr); padding: 29px 20px 20px; }
+    .section-output { background: transparent;    grid-template-columns: repeat(4, 1fr); padding: 20px; }
+    .section-temp   { background: var(--bg-card); grid-template-columns: repeat(2, 1fr); }
+    .section-temp .col-head { padding: 12px 0 0; min-height: 55px; align-items: flex-start; }
+    .section-temp .fields { padding-top: 8px; }
+
+    /* ── Formula column ──────────────────────────────────── */
+    .col {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .col-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      min-height: 40px;
+      flex-shrink: 0;
+    }
+    .col-head-label {
+      font-size: 11px;
+      color: var(--c-sec);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .col-head-formula {
+      font-size: 10px;
+      color: var(--c-dim);
+      text-transform: uppercase;
+      font-weight: 400;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    /* ── Toggle switch ───────────────────────────────────── */
+    .tog {
+      position: relative;
+      width: 24px; height: 14px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .tog input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .tog-track {
+      position: absolute; inset: 0;
+      background: #323232;
+      border-radius: 7px;
+      transition: background 0.2s;
+    }
+    .tog-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 10px; height: 10px;
+      background: #161616;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .tog input:checked ~ .tog-track { background: var(--c-toggle); }
+    .tog input:checked ~ .tog-thumb { transform: translateX(10px); }
+
+    /* ── Fields list ─────────────────────────────────────── */
+    .fields {
+      display: flex;
+      flex-direction: column;
+      padding-top: 24px;
+      flex: 1;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      font-size: 13px;
+      height: 73px;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+
+    .field-lbl {
+      color: var(--c-primary);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .field-lbl-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 21px;
+    }
+    .field-hint {
+      font-size: 10px;
+      color: var(--c-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .total-lbl { text-transform: uppercase; }
+
+    /* ── Input pill ──────────────────────────────────────── */
+    .in-pill {
+      background: var(--bg-input);
+      border-radius: 10px;
+      padding: 16px;
+      width: 68px;
+      height: 41px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+      cursor: text;
+    }
+    .in-pill:hover { background: #212121; }
+    .in-pill:focus-within { background: var(--bg-input); border-color: var(--c-border); }
+    .in-pill input {
+      background: none; border: none; outline: none;
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--c-primary);
+      text-align: right;
+      width: 32px;
+      padding: 0;
+    }
+    .in-pill input::-webkit-outer-spin-button,
+    .in-pill input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .in-pill input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+    .unit {
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--c-dim);
+      flex-shrink: 0;
+    }
+
+    /* ── Output pill ─────────────────────────────────────── */
+    .out-pill {
+      border-radius: 10px;
+      padding: 16px;
+      width: 68px;
+      height: 41px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .out-val { font-size: 13px; text-align: right; white-space: nowrap; }
+    .out-val.accent { color: var(--c-accent); }
+    .out-val.output { color: var(--c-output); }
+    .out-val.zero   { color: var(--c-dim); }
+    .unit.accent    { color: var(--c-accent); }
+    .unit.output    { color: var(--c-output); }
+    .unit.zero      { color: var(--c-dim); }
+
+    /* ── Spacer rows ─────────────────────────────────────── */
+    .spacer-sm { height: 73px; flex-shrink: 0; }
+    .spacer-lg { height: 73px; flex-shrink: 0; }
+
+    /* ── Disabled column state ───────────────────────────── */
+    /* Disabled column: only dim the fields, keep the header toggle clickable */
+    .col-off .fields { opacity: 0.3; pointer-events: none; }
+
+    /* ── Preset menu ────────────────────────────────────── */
+    .preset-anchor { position: relative; display: flex; align-items: center; }
+    .preset-menu {
+      display: flex;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      width: 180px;
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid #212121;
+      border-radius: 10px;
+      padding: 16px 8px 8px;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 100;
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.14s ease-out, transform 0.14s ease-out;
+    }
+    .preset-menu.open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    .preset-title {
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--c-sec);
+      padding: 0 8px 8px;
+      white-space: nowrap;
+    }
+    .preset-option {
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--c-primary);
+      padding: 12px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .preset-option:hover {
+      background: var(--bg-input);
+    }
+    .preset-check {
+      width: 8px;
+      height: 6px;
+      display: none;
+      flex-shrink: 0;
+    }
+    .preset-option.active .preset-check {
+      display: block;
+    }
+
+    /* ── Header actions ─────────────────────────────────── */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Settings menu ─────────────────────────────────── */
+    .settings-anchor { position: relative; display: flex; align-items: center; }
+    .settings-trigger {
+      transition: stroke 0.15s;
+      cursor: pointer;
+    }
+    .settings-trigger:hover {
+      stroke: #9e9e9e;
+    }
+    .settings-menu {
+      display: flex;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      width: 225px;
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid #212121;
+      border-radius: 10px;
+      padding: 16px 8px 8px;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 100;
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.14s ease-out, transform 0.14s ease-out;
+    }
+    .settings-menu.open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    .settings-title {
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--c-sec);
+      padding: 0 8px 8px;
+      white-space: nowrap;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .settings-row-label {
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--c-primary);
+    }
+    .settings-dropdown {
+      position: relative;
+      background: var(--bg-input);
+      border-radius: 8px;
+      padding: 10px 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .settings-dropdown:hover { background: #212121; }
+    .settings-dd-val {
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--c-primary);
+      white-space: nowrap;
+    }
+    .settings-chevron {
+      width: 7px;
+      height: 4px;
+      flex-shrink: 0;
+    }
+    .settings-sub-menu {
+      display: flex;
+      position: fixed;
+      width: 120px;
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid #212121;
+      border-radius: 10px;
+      padding: 8px;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 110;
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.14s ease-out, transform 0.14s ease-out;
+    }
+    .settings-sub-menu.open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    .settings-sub-option {
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--c-primary);
+      padding: 12px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s;
+    }
+    .settings-sub-option:hover {
+      background: var(--bg-input);
+    }
+    .check-icon {
+      width: 8px;
+      height: 6px;
+      display: none;
+      flex-shrink: 0;
+    }
+    .settings-sub-option.active .check-icon {
+      display: block;
+    }
+
+    /* ── Tooltips ───────────────────────────────────────── */
+    .tooltip-label {
+      position: relative;
+      cursor: default;
+    }
+    .tooltip-label:hover {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--c-sec);
+    }
+    .tooltip {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 425px;
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid #212121;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.14s ease-out;
+      white-space: normal;
+    }
+    .tooltip-label:hover .tooltip {
+      opacity: 1;
+    }
+    .tooltip-text {
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--c-primary);
+      line-height: 18px;
+      text-decoration: none;
+    }
+    .tooltip-icon {
+      flex-shrink: 0;
+    }
+    .tooltip-right {
+      left: auto;
+      right: 0;
+    }
+
+    /* ── Tab transitions ───────────────────────────────────── */
+    /* tab transition: cols only (no wrapper opacity to avoid bg shift) */
+
+    /* ── Hidden ──────────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 680px) {
+      body { padding: 0; }
+      .app { border-radius: 0; min-height: 100dvh; }
+      .header { padding: 20px 16px 18px; }
+      .unit-bar { padding: 10px 16px 0; }
+      .section-input, .section-output, .section-temp {
+        grid-template-columns: 1fr;
+        padding: 8px 4px 12px;
+      }
+      .col { border-bottom: 1px solid var(--c-border); padding: 0 12px 8px; }
+      .col:last-child { border-bottom: none; }
+    }
+
+    @media (min-width: 681px) and (max-width: 900px) {
+      .section-input, .section-output {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ── Print ───────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      :root {
+        --bg-page: #fff; --bg-outer: #fff; --bg-card: #f5f5f5;
+        --bg-input: #eee; --c-primary: #000; --c-sec: #555;
+        --c-dim: #888; --c-accent: #1a6e8a; --c-output: #7a3a88;
+        --c-border: #ccc;
+      }
+      .print-btn { display: none; }
+      .settings-anchor { display: none; }
+      .app { border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="header">
+    <nav class="nav">
+      <button class="nav-tab active" id="tab-recipe"      onclick="switchTab('recipe')">Recipe</button>
+      <button class="nav-tab"        id="tab-temperature" onclick="switchTab('temperature')">Temperature</button>
+    </nav>
+    <div class="header-actions">
+      <div class="settings-anchor">
+        <svg class="settings-trigger" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#424242" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 7.5H12"/>
+          <path d="M7 7.5H3"/>
+          <path d="M9.5 10C10.8807 10 12 8.88071 12 7.5C12 6.11929 10.8807 5 9.5 5C8.11929 5 7 6.11929 7 7.5C7 8.88071 8.11929 10 9.5 10Z"/>
+          <path d="M21 16.5H17"/>
+          <path d="M12 16.5H3"/>
+          <path d="M14.5 19C15.8807 19 17 17.8807 17 16.5C17 15.1193 15.8807 14 14.5 14C13.1193 14 12 15.1193 12 16.5C12 17.8807 13.1193 19 14.5 19Z"/>
+        </svg>
+        <div class="settings-menu" id="settings-menu">
+          <div class="settings-title">Settings</div>
+          <div class="settings-row">
+            <span class="settings-row-label">Unit System</span>
+            <div class="settings-dropdown" id="unit-dropdown">
+              <span class="settings-dd-val" id="settings-unit-val">°F</span>
+              <svg class="settings-chevron" width="7" height="4" viewBox="0 0 7 4" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1L3.5 3L6 1"/></svg>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">Yeast Type</span>
+            <div class="settings-dropdown" id="yeast-dropdown">
+              <span class="settings-dd-val" id="settings-yeast-val">Fresh</span>
+              <svg class="settings-chevron" width="7" height="4" viewBox="0 0 7 4" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1L3.5 3L6 1"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="print-btn" onclick="window.print()" title="Print">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#424242" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7.25 7H16.75V5C16.75 3 16 2 13.75 2H10.25C8 2 7.25 3 7.25 5V7Z"/>
+          <path d="M16 15V19C16 21 15 22 13 22H11C9 22 8 21 8 19V15H16Z"/>
+          <path d="M21 10V15C21 17 20 18 18 18H16V15H8V18H6C4 18 3 17 3 15V10C3 8 4 7 6 7H18C20 7 21 8 21 10Z"/>
+          <path d="M17 15H15.79H7"/>
+          <path d="M7 11H10"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════
+       RECIPE TAB
+  ══════════════════════════════════════════════════════════ -->
+  <div id="content-recipe">
+
+    <!-- Input section ──────────────────────────────────── -->
+    <div class="section section-input">
+
+      <!-- Formula column -->
+      <div class="col" id="col-formula">
+        <div class="col-head">
+          <div class="col-head-label">
+            <span class="tooltip-label">Formula<div class="tooltip"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">The baker's formula expresses each ingredient as a percentage of the flour weight, which is always 100%.</span></div></span>
+          </div>
+          <!-- formula icon + preset menu -->
+          <div class="preset-anchor">
+            <svg class="preset-trigger" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#424242" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7.01 18L3 13.99C1.66 12.65 1.66 11.32 3 9.97998L9.68 3.29999L17.03 10.65C17.4 11.02 17.4 11.62 17.03 11.99L11.01 18.01C9.69 19.33 8.35 19.33 7.01 18Z" stroke-miterlimit="10"/>
+              <path d="M8.35 1.95001L9.69 3.28998" stroke-miterlimit="10"/>
+              <path d="M2.07 11.92L17.19 11.26" stroke-miterlimit="10"/>
+              <path d="M3 22H16" stroke-miterlimit="10"/>
+              <path d="M18.85 15C18.85 15 17 17.01 17 18.24C17 19.26 17.83 20.09 18.85 20.09C19.87 20.09 20.7 19.26 20.7 18.24C20.7 17.01 18.85 15 18.85 15Z"/>
+            </svg>
+            <div class="preset-menu" id="preset-menu">
+              <div class="preset-title">Presets</div>
+              <div class="preset-option active" data-preset="baguette"><span>Baguette</span><svg class="preset-check" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg></div>
+              <div class="preset-option" data-preset="ciabatta"><span>Ciabatta</span><svg class="preset-check" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg></div>
+              <div class="preset-option" data-preset="focaccia"><span>Focaccia</span><svg class="preset-check" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg></div>
+              <div class="preset-option" data-preset="pan-de-cristal"><span>Pan De Cristal</span><svg class="preset-check" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg></div>
+              <div class="preset-option" data-preset="pizza"><span>Pizza</span><svg class="preset-check" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Flour</span>
+            <div class="in-pill">
+              <input type="number" id="flourPct" value="100" min="1" max="100" step="1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Water</span>
+            <div class="in-pill">
+              <input type="number" id="waterPct" value="70" min="1" max="200" step="1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Yeast</span>
+            <div class="in-pill">
+              <input type="number" id="yeastPct" value="3" min="0.1" max="20" step="0.1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Salt</span>
+            <div class="in-pill">
+              <input type="number" id="saltPct" value="2" min="0.1" max="10" step="0.1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field field-total">
+            <span class="field-lbl total-lbl">Total</span>
+            <div class="out-pill">
+              <span class="out-val accent" id="out-totalPct">175</span>
+              <span class="unit accent">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Yield column -->
+      <div class="col" id="col-yield">
+        <div class="col-head">
+          <span class="col-head-label">Yield</span>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Quantity</span>
+            <div class="in-pill">
+              <input type="number" id="loaves" value="4" min="1" max="99" step="1">
+              <span class="unit">x</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Weight per</span>
+            <div class="in-pill">
+              <input type="number" id="loafWeight" value="330" min="50" max="5000" step="10">
+              <span class="unit">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Process Loss</span>
+            <div class="in-pill">
+              <input type="number" id="processLoss" value="1" min="0" max="20" step="0.5">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="spacer-lg"></div>
+          <div class="field field-total">
+            <span class="field-lbl total-lbl">Dough Weight</span>
+            <div class="out-pill">
+              <span class="out-val accent" id="out-doughWeight">3000</span>
+              <span class="unit accent">g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferment column -->
+      <div class="col" id="col-pref-in">
+        <div class="col-head">
+          <span class="col-head-label"><span class="tooltip-label">Preferment<div class="tooltip"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">Preferment is a portion of dough made in advance and left to ferment, which enhances flavor and texture.</span></div></span></span>
+          <label class="tog">
+            <input type="checkbox" id="prefOn" checked>
+            <div class="tog-track"></div>
+            <div class="tog-thumb"></div>
+          </label>
+        </div>
+        <div class="fields" id="pref-fields">
+          <div class="field">
+            <span class="field-lbl">Pct. of Flour</span>
+            <div class="in-pill">
+              <input type="number" id="prefFlourPct" value="20" min="1" max="100" step="1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Hydration</span>
+            <div class="in-pill">
+              <input type="number" id="prefHydration" value="100" min="1" max="200" step="1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Pct. of Yeast</span>
+            <div class="in-pill">
+              <input type="number" id="prefYeastPct" value="0.3" min="0.01" max="5" step="0.1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bassinage column -->
+      <div class="col" id="col-bass-in">
+        <div class="col-head">
+          <span class="col-head-label"><span class="tooltip-label">Bassinage<div class="tooltip tooltip-right"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">Bassinage is a technique of holding back a portion of water, then slowly adding it to improve dough strength.</span></div></span></span>
+          <label class="tog">
+            <input type="checkbox" id="bassOn" checked>
+            <div class="tog-track"></div>
+            <div class="tog-thumb"></div>
+          </label>
+        </div>
+        <div class="fields" id="bass-fields">
+          <div class="field">
+            <span class="field-lbl">Pct. of Water</span>
+            <div class="in-pill">
+              <input type="number" id="bassWaterPct" value="7" min="1" max="50" step="1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /section-input -->
+
+    <!-- Output section ─────────────────────────────────── -->
+    <div class="section section-output">
+
+      <!-- Recipe output -->
+      <div class="col">
+        <div class="col-head">
+          <span class="col-head-label">Recipe</span>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Total Flour</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-flourW">1714</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Total Water</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-waterW">1200</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Yeast</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-yeastW">50</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Salt</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-saltW">34</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field field-total">
+            <span class="field-lbl total-lbl">Total Yield</span>
+            <div class="out-pill">
+              <span class="out-val accent" id="out-totalYield">3000</span>
+              <span class="unit accent">g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferment output -->
+      <div class="col" id="col-pref-out">
+        <div class="col-head">
+          <span class="col-head-label">Preferment</span>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Flour</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-prefFlour">343</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Water</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-prefWater">343</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Yeast</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-prefYeast">1</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Autolyse output -->
+      <div class="col" id="col-auto-out">
+        <div class="col-head">
+          <span class="col-head-label" id="autolyse-lbl"><span class="tooltip-label">Autolyse<div class="tooltip"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">The Autolyse method is a rest period after only mixing flour and water that improves gluten and flavor.</span></div></span></span>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Flour</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-autoFlour">1371</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Water</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-autoWater">773</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bassinage output -->
+      <div class="col" id="col-bass-out">
+        <div class="col-head">
+          <span class="col-head-label">Bassinage</span>
+        </div>
+        <div class="fields">
+          <div class="spacer-sm"></div>
+          <div class="field">
+            <span class="field-lbl">Water</span>
+            <div class="out-pill">
+              <span class="out-val output" id="out-bassWater">84</span>
+              <span class="unit output">g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /section-output -->
+  </div><!-- /content-recipe -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       TEMPERATURE TAB
+  ══════════════════════════════════════════════════════════ -->
+  <div id="content-temp" class="hidden">
+
+    <!-- Spacer (unit toggle moved to Settings menu) -->
+    <div class="unit-bar"></div>
+    <!-- hidden buttons keep JS sync working -->
+    <div style="display:none;">
+      <button class="unit-btn active" id="btn-F">°F</button>
+      <button class="unit-btn"        id="btn-C">°C</button>
+    </div>
+
+    <!-- Temp input section -->
+    <div class="section section-temp">
+
+      <!-- TTF column -->
+      <div class="col">
+        <div class="col-head">
+          <div class="col-head-label">
+            <span>TTF</span>
+            <span class="col-head-formula">Formula: TTF = DDT × Multiplication Factor</span>
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <div class="field-lbl-stack">
+              <span class="field-lbl">Desired Dough Temp</span>
+              <span class="field-hint" id="ddt-hint">IDEAL: 75–78°F, 24–26°C</span>
+            </div>
+            <div class="in-pill">
+              <input type="number" id="ddt" value="76" min="32" max="212" step="1">
+              <span class="unit">°</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Multiplication Factor</span>
+            <div class="out-pill">
+              <span class="out-val" id="out-multFactor">4</span>
+              <span class="unit">x</span>
+            </div>
+          </div>
+          <div class="spacer-sm"></div>
+          <div class="spacer-sm"></div>
+          <div class="field field-total">
+            <span class="field-lbl total-lbl">Total Temp. Factor</span>
+            <div class="out-pill">
+              <span class="out-val accent" id="out-ttf">304</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water Temperature column -->
+      <div class="col">
+        <div class="col-head">
+          <div class="col-head-label">
+            <span>Water Temperature</span>
+            <span class="col-head-formula" id="water-temp-formula">Formula: Water Temp = TTF − (Flour + Room + Preferment + Friction)</span>
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <span class="field-lbl">Flour Temperature</span>
+            <div class="in-pill">
+              <input type="number" id="flourTemp" value="69" min="-20" max="200" step="1">
+              <span class="unit">°</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Room Temperature</span>
+            <div class="in-pill">
+              <input type="number" id="roomTemp" value="69" min="-20" max="200" step="1">
+              <span class="unit">°</span>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-lbl">
+              <span>Preferment Temp</span>
+              <label class="tog">
+                <input type="checkbox" id="prefTempOn" checked>
+                <div class="tog-track"></div>
+                <div class="tog-thumb"></div>
+              </label>
+            </div>
+            <div class="in-pill" id="prefTempPill">
+              <input type="number" id="prefTemp" value="71" min="-20" max="200" step="1">
+              <span class="unit">°</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-lbl">Friction Factor</span>
+            <div class="in-pill">
+              <input type="number" id="frictionFactor" value="30" min="0" max="100" step="1">
+              <span class="unit">°</span>
+            </div>
+          </div>
+          <div class="field field-total">
+            <span class="field-lbl total-lbl">Water Temperature</span>
+            <div class="out-pill">
+              <span class="out-val accent" id="out-waterTemp">65</span>
+              <span class="unit accent">°</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /section-temp -->
+  </div><!-- /content-temp -->
+
+</div><!-- /app -->
+
+<!-- Sub-menus outside .app so backdrop-filter works independently -->
+<div class="settings-sub-menu" id="unit-sub-menu">
+  <div class="settings-sub-option active" data-unit="F">
+    <span>°F</span>
+    <svg class="check-icon" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg>
+  </div>
+  <div class="settings-sub-option" data-unit="C">
+    <span>°C</span>
+    <svg class="check-icon" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg>
+  </div>
+</div>
+<div class="settings-sub-menu" id="yeast-sub-menu">
+  <div class="settings-sub-option active" data-yeast="fresh" data-pct="3">
+    <span>Fresh</span>
+    <svg class="check-icon" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg>
+  </div>
+  <div class="settings-sub-option" data-yeast="active" data-pct="1.2">
+    <span>Active</span>
+    <svg class="check-icon" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg>
+  </div>
+  <div class="settings-sub-option" data-yeast="instant" data-pct="1">
+    <span>Instant</span>
+    <svg class="check-icon" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3L3 5L7 1"/></svg>
+  </div>
+</div>
+
+<script>
+  // ── State ───────────────────────────────────────────────
+  const S = {
+    activeTab: 'recipe',
+    unit: 'F',
+  };
+
+  // ── Tab switching ────────────────────────────────────────
+  var _switching = false;
+
+  function switchTab(tab) {
+    if (tab === S.activeTab || _switching) return;
+    _switching = true;
+
+    var recipe = document.getElementById('content-recipe');
+    var temp   = document.getElementById('content-temp');
+    var fromEl = S.activeTab === 'recipe' ? recipe : temp;
+    var toEl   = tab === 'recipe' ? recipe : temp;
+
+    S.activeTab = tab;
+
+    document.getElementById('tab-recipe').classList.toggle('active', tab === 'recipe');
+    document.getElementById('tab-temperature').classList.toggle('active', tab === 'temperature');
+
+    /* Only fade .col elements (no bg) and .section-output (transparent bg).
+       Never fade a wrapper/section that carries a background colour. */
+    var exitCols = fromEl.querySelectorAll('.col');
+    exitCols.forEach(function(c) {
+      c.style.transition = 'opacity 0.14s ease-out';
+      c.style.opacity = '0';
+    });
+
+    var out = null;
+    if (fromEl === recipe) {
+      out = recipe.querySelector('.section-output');
+      out.style.transition = 'opacity 0.14s ease-out, transform 0.14s ease-out';
+      out.style.opacity = '0';
+      out.style.transform = 'translateY(-12px)';
+    }
+
+    setTimeout(function() {
+      exitCols.forEach(function(c) { c.style.transition = ''; c.style.opacity = ''; });
+      if (out) { out.style.transition = ''; out.style.opacity = ''; out.style.transform = ''; }
+      fromEl.classList.add('hidden');
+      showTab(toEl);
+    }, 160);
+  }
+
+  function showTab(el) {
+    var enterCols = el.querySelectorAll('.col');
+    enterCols.forEach(function(c) {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(10px)';
+    });
+
+    el.classList.remove('hidden');
+    el.offsetHeight;
+
+    enterCols.forEach(function(c) {
+      c.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+      c.style.opacity = '1';
+      c.style.transform = 'translateY(0)';
+    });
+
+    setTimeout(function() {
+      enterCols.forEach(function(c) {
+        c.style.transition = ''; c.style.opacity = ''; c.style.transform = '';
+      });
+      _switching = false;
+    }, 220);
+
+    calc();
+  }
+
+  // ── Preset menu ─────────────────────────────────────────
+  (function() {
+    const trigger = document.querySelector('.preset-trigger');
+    const menu = document.getElementById('preset-menu');
+
+    function syncTrigger() {
+      const isOpen = menu.classList.contains('open');
+      trigger.setAttribute('stroke', isOpen ? '#9e9e9e' : '#424242');
+    }
+
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Close settings menu if open
+      var sm = document.getElementById('settings-menu');
+      var st = document.querySelector('.settings-trigger');
+      if (sm) { sm.classList.remove('open'); }
+      if (st) { st.setAttribute('stroke', '#424242'); }
+      menu.classList.toggle('open');
+      syncTrigger();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!menu.contains(e.target)) {
+        menu.classList.remove('open');
+        syncTrigger();
+      }
+    });
+
+    var presets = {
+      baguette:       { water: 70, salt: 2, loaves: 4, loafWeight: 330, prefFlour: 20, prefHydration: 100, bassWater: 7 },
+      ciabatta:       { water: 75, salt: 2, loaves: 4, loafWeight: 760, prefFlour: 20, prefHydration: 50,  bassWater: 10 },
+      focaccia:       { water: 80, salt: 2, loaves: 4, loafWeight: 900, prefFlour: 20, prefHydration: 50,  bassWater: 10 },
+      'pan-de-cristal': { water: 100, salt: 2, loaves: 4, loafWeight: 255, prefFlour: 20, prefHydration: 50, bassWater: 20 },
+      pizza:          { water: 60, salt: 2, loaves: 1, loafWeight: 2700, prefFlour: 20, prefHydration: 50, bassWater: 10 }
+    };
+
+    menu.addEventListener('click', function(e) {
+      const opt = e.target.closest('.preset-option');
+      if (!opt) return;
+      menu.querySelectorAll('.preset-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      menu.classList.remove('open');
+      syncTrigger();
+
+      var p = presets[opt.dataset.preset];
+      if (!p) return;
+
+      // Apply preset values
+      setVal('flourPct', 100);
+      setVal('waterPct', p.water);
+      setVal('saltPct', p.salt);
+      setVal('loaves', p.loaves);
+      setVal('loafWeight', p.loafWeight);
+      setVal('prefFlourPct', p.prefFlour);
+      setVal('prefHydration', p.prefHydration);
+      setVal('bassWaterPct', p.bassWater);
+
+      // Ensure preferment & bassinage are on
+      document.getElementById('prefOn').checked = true;
+      document.getElementById('bassOn').checked = true;
+
+      calc();
+    });
+  })();
+
+  // ── Settings menu ──────────────────────────────────────────
+  (function() {
+    var settingsTrigger = document.querySelector('.settings-trigger');
+    var settingsMenu = document.getElementById('settings-menu');
+    var unitDropdown = document.getElementById('unit-dropdown');
+    var yeastDropdown = document.getElementById('yeast-dropdown');
+    var unitSubMenu = document.getElementById('unit-sub-menu');
+    var yeastSubMenu = document.getElementById('yeast-sub-menu');
+
+    function syncSettingsTrigger() {
+      var isOpen = settingsMenu.classList.contains('open');
+      settingsTrigger.setAttribute('stroke', isOpen ? '#9e9e9e' : '#424242');
+    }
+
+    function closeAllSubMenus() {
+      unitSubMenu.classList.remove('open');
+      yeastSubMenu.classList.remove('open');
+    }
+
+    // Toggle settings menu
+    settingsTrigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Close preset menu if open
+      var pm = document.getElementById('preset-menu');
+      var pt = document.querySelector('.preset-trigger');
+      if (pm) { pm.classList.remove('open'); }
+      if (pt) { pt.setAttribute('stroke', '#424242'); }
+      settingsMenu.classList.toggle('open');
+      if (!settingsMenu.classList.contains('open')) closeAllSubMenus();
+      syncSettingsTrigger();
+    });
+
+    // Clicks inside settings menu: close sub-menus if not on a dropdown
+    settingsMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!unitDropdown.contains(e.target) && !yeastDropdown.contains(e.target)) {
+        closeAllSubMenus();
+      }
+    });
+
+    // Clicks inside sub-menus should not close anything
+    unitSubMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+    yeastSubMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    function positionSubMenu(dropdown, subMenu) {
+      var rect = dropdown.getBoundingClientRect();
+      subMenu.style.top = (rect.bottom + 4) + 'px';
+      subMenu.style.right = (window.innerWidth - rect.right) + 'px';
+    }
+
+    // Toggle unit sub-menu
+    unitDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+      yeastSubMenu.classList.remove('open');
+      var opening = !unitSubMenu.classList.contains('open');
+      unitSubMenu.classList.toggle('open');
+      if (opening) positionSubMenu(unitDropdown, unitSubMenu);
+    });
+
+    // Toggle yeast sub-menu
+    yeastDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+      unitSubMenu.classList.remove('open');
+      var opening = !yeastSubMenu.classList.contains('open');
+      yeastSubMenu.classList.toggle('open');
+      if (opening) positionSubMenu(yeastDropdown, yeastSubMenu);
+    });
+
+    // Unit selection
+    unitSubMenu.addEventListener('click', function(e) {
+      var opt = e.target.closest('.settings-sub-option');
+      if (!opt) return;
+      e.stopPropagation();
+      var unit = opt.dataset.unit;
+      unitSubMenu.querySelectorAll('.settings-sub-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      document.getElementById('settings-unit-val').textContent = '°' + unit;
+      unitSubMenu.classList.remove('open');
+      setUnit(unit);
+    });
+
+    // Yeast type selection
+    yeastSubMenu.addEventListener('click', function(e) {
+      var opt = e.target.closest('.settings-sub-option');
+      if (!opt) return;
+      e.stopPropagation();
+      yeastSubMenu.querySelectorAll('.settings-sub-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      document.getElementById('settings-yeast-val').textContent = opt.querySelector('span').textContent;
+      yeastSubMenu.classList.remove('open');
+      var pct = parseFloat(opt.dataset.pct);
+      document.getElementById('yeastPct').value = pct;
+      calc();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (!settingsMenu.contains(e.target) && !settingsTrigger.contains(e.target)
+          && !unitSubMenu.contains(e.target) && !yeastSubMenu.contains(e.target)) {
+        settingsMenu.classList.remove('open');
+        closeAllSubMenus();
+        syncSettingsTrigger();
+      }
+    });
+  })();
+
+  // ── Temperature unit ─────────────────────────────────────
+  function setUnit(unit) {
+    if (unit === S.unit) return;
+    const prev = S.unit;
+    S.unit = unit;
+
+    document.getElementById('btn-F').classList.toggle('active', unit === 'F');
+    document.getElementById('btn-C').classList.toggle('active', unit === 'C');
+
+    // Sync settings dropdown
+    var suv = document.getElementById('settings-unit-val');
+    if (suv) suv.textContent = '°' + unit;
+    var unitOpts = document.querySelectorAll('#unit-sub-menu .settings-sub-option');
+    unitOpts.forEach(function(o) { o.classList.toggle('active', o.dataset.unit === unit); });
+
+    // Convert temperature inputs
+    const tempIds   = ['ddt', 'flourTemp', 'roomTemp', 'prefTemp'];
+    const deltaIds  = ['frictionFactor']; // these are ΔT
+
+    if (prev === 'F' && unit === 'C') {
+      tempIds.forEach(id  => setVal(id, fToC(getVal(id))));
+      deltaIds.forEach(id => setVal(id, Math.round(getVal(id) * 5/9)));
+    } else if (prev === 'C' && unit === 'F') {
+      tempIds.forEach(id  => setVal(id, cToF(getVal(id))));
+      deltaIds.forEach(id => setVal(id, Math.round(getVal(id) * 9/5)));
+    }
+
+    calc();
+  }
+
+  function fToC(f) { return Math.round((f - 32) * 5/9); }
+  function cToF(c) { return Math.round(c * 9/5 + 32); }
+
+  function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function setVal(id, v) { document.getElementById(id).value = v; }
+  function getCheck(id) { return document.getElementById(id).checked; }
+
+  // ── Main calculation ─────────────────────────────────────
+  function calc() {
+
+    /* ── Recipe ─────────────────────────────── */
+    const flourPct    = getVal('flourPct');
+    const waterPct    = getVal('waterPct');
+    const yeastPct    = getVal('yeastPct');
+    const saltPct     = getVal('saltPct');
+    const totalPct    = flourPct + waterPct + yeastPct + saltPct;
+    if (totalPct === 0) return;
+
+    const loaves      = getVal('loaves');
+    const loafWeight  = getVal('loafWeight');
+    const processLoss = getVal('processLoss');
+    const totalYield  = loaves * loafWeight;
+    const doughWeight = processLoss >= 100
+      ? totalYield
+      : Math.round(totalYield / (1 - processLoss / 100));
+
+    const flourW  = Math.round(doughWeight * (flourPct / totalPct));
+    const waterW  = Math.round(doughWeight * (waterPct / totalPct));
+    const yeastW  = Math.round(doughWeight * (yeastPct / totalPct));
+    const saltW   = Math.round(doughWeight * (saltPct  / totalPct));
+
+    const prefOn      = getCheck('prefOn');
+    const prefFlourPct= getVal('prefFlourPct');
+    const prefHydration= getVal('prefHydration');
+    const prefYeastPct= getVal('prefYeastPct');
+
+    let prefFlour = 0, prefWater = 0, prefYeast = 0;
+    if (prefOn) {
+      prefFlour = Math.round(flourW * (prefFlourPct  / 100));
+      prefWater = Math.round(prefFlour * (prefHydration / 100));
+      prefYeast = Math.round(prefFlour * (prefYeastPct  / 100) * 10) / 10;
+    }
+
+    const bassOn      = getCheck('bassOn');
+    const bassWaterPct= getVal('bassWaterPct');
+    let bassWater = 0;
+    if (bassOn) bassWater = Math.round(waterW * (bassWaterPct / 100));
+
+    const autoFlour = flourW - prefFlour;
+    const autoWater = waterW - prefWater - bassWater;
+
+    // Write recipe outputs
+    setText('out-totalPct',   fmt(totalPct));
+    setText('out-doughWeight',fmt(doughWeight));
+    setText('out-flourW',     fmt(flourW));
+    setText('out-waterW',     fmt(waterW));
+    setText('out-yeastW',     fmt(yeastW));
+    setText('out-saltW',      fmt(saltW));
+    setText('out-totalYield', fmt(doughWeight));
+    setText('out-prefFlour',  fmt(prefFlour));
+    setText('out-prefWater',  fmt(prefWater));
+    setText('out-prefYeast',  fmt(prefYeast));
+    setText('out-autoFlour',  fmt(autoFlour));
+    setText('out-autoWater',  fmt(autoWater));
+    setText('out-bassWater',  fmt(bassWater));
+
+    // Toggle column disabled state (dims fields, keeps header toggle clickable)
+    toggleCol('col-pref-in',  !prefOn);
+    toggleCol('col-bass-in',  !bassOn);
+
+    // Output column color: purple when active, dim grey when off
+    const prefClass = prefOn ? 'output' : 'zero';
+    setOutClass('out-prefFlour', prefClass);
+    setOutClass('out-prefWater', prefClass);
+    setOutClass('out-prefYeast', prefClass);
+    setOutClass('out-bassWater', bassOn ? 'output' : 'zero');
+
+    /* ── Temperature ─────────────────────────── */
+    const prefTempOn    = getCheck('prefTempOn');
+    const ddt           = getVal('ddt');
+    const flourTemp     = getVal('flourTemp');
+    const roomTemp      = getVal('roomTemp');
+    const prefTemp      = prefTempOn ? getVal('prefTemp') : 0;
+    const frictionFactor= getVal('frictionFactor');
+
+    const multFactor = prefTempOn ? 4 : 3;
+    const ttf        = ddt * multFactor;
+    const waterTemp  = ttf - flourTemp - roomTemp - prefTemp - frictionFactor;
+
+    setText('out-multFactor', multFactor);
+    setText('out-ttf',        fmt(ttf));
+    setText('out-waterTemp',  fmt(waterTemp));
+
+    // Update water temp formula hint based on preferment state
+    const formula = prefTempOn
+      ? 'Formula: Water Temp = TTF − (Flour + Room + Preferment + Friction)'
+      : 'Formula: Water Temp = TTF − (Flour + Room + Friction)';
+    setText('water-temp-formula', formula);
+
+    // Grey out prefTemp pill when toggle off
+    document.getElementById('prefTempPill').style.opacity = prefTempOn ? '1' : '0.3';
+    document.getElementById('prefTemp').disabled = !prefTempOn;
+
+    // DDT hint text
+    const hint = S.unit === 'F' ? 'IDEAL: 75–78°F, 24–26°C' : 'IDEAL: 24–26°C, 75–78°F';
+    setText('ddt-hint', hint);
+  }
+
+  function fmt(n) {
+    if (n === null || isNaN(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs < 10 && !Number.isInteger(n)) return n.toFixed(1);
+    return Math.round(n).toString();
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function toggleCol(colId, isOff) {
+    document.getElementById(colId).classList.toggle('col-off', isOff);
+  }
+
+  function setOutClass(id, cls) {
+    const val = document.getElementById(id);
+    if (!val) return;
+    val.className = `out-val ${cls}`;
+    const unit = val.nextElementSibling;
+    if (unit && unit.classList.contains('unit')) unit.className = `unit ${cls}`;
+  }
+
+  // ── Wire up all inputs ───────────────────────────────────
+  // ── Reset all number inputs to their HTML defaults on load ──
+  document.querySelectorAll('input[type="number"]').forEach(function(el) {
+    el.value = el.defaultValue;
+    el.setAttribute('autocomplete', 'off');
+  });
+
+  document.querySelectorAll('input').forEach(el => {
+    el.addEventListener('input',  calc);
+    el.addEventListener('change', calc);
+    el.addEventListener('focus',  () => setTimeout(() => el.select(), 0));
+  });
+
+  // ── Initial render ───────────────────────────────────────
+  calc();
+
+  // ── Resize window to fit app on launch ───────────────────
+  (function() {
+    window.addEventListener('load', function() {
+      var app = document.querySelector('.app');
+      var w = Math.min(1000, screen.availWidth - 80) + 24; // app max-width + body padding
+      var h = Math.min(app.scrollHeight + 24, screen.availHeight - 80);
+      try {
+        window.resizeTo(w, h);
+        window.moveTo(
+          Math.round((screen.availWidth - w) / 2),
+          Math.round((screen.availHeight - h) / 4)
+        );
+      } catch(e) {}
+    });
+  })();
+
+  // ── Service Worker ───────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
