@@ -1,4 +1,4 @@
-const CACHE = 'dougi-v1';
+const CACHE = 'dougi-v1.2';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -25,8 +25,23 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Cache-first for same-origin assets, network-first for fonts
   const url = new URL(e.request.url);
+
+  // Network-first for HTML (always get latest, fall back to cache offline)
+  if (url.origin === location.origin && e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for other same-origin assets (icons, manifest)
   if (url.origin === location.origin) {
     e.respondWith(
       caches.match(e.request)
@@ -37,7 +52,7 @@ self.addEventListener('fetch', e => {
         }))
     );
   } else {
-    // Network first, fall back to cache (for fonts etc.)
+    // Network-first for external resources (fonts)
     e.respondWith(
       fetch(e.request)
         .then(res => {
