@@ -32,9 +32,10 @@
     :root {
       --bg-html:   #000000;
       --bg-page:   #0d0d0d;
-      --bg-outer:  #131313;
-      --bg-card:   #161616;
-      --bg-input:  #1b1b1b;
+      --bg-outer:  #0c0c0c;
+      --bg-card:   #0c0c0c;
+      --bg-input:  #151515;
+      --c-divider: #202020;
       --bg-in-hov: #212121;
       --bg-tab-on: #323232;
       --c-primary: #ffffff;
@@ -180,6 +181,7 @@
       width: 100%;
       max-width: 1000px;
       background: var(--bg-outer);
+      border: 1px solid var(--c-divider);
       border-radius: 20px;
       overflow: hidden;
     }
@@ -190,7 +192,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 40px 40px 30px;
+      padding: 24px;
+      border-bottom: 1px solid var(--c-divider);
     }
 
     .nav { display: flex; gap: 8px; }
@@ -282,29 +285,29 @@
     /* ── Section grid (Input row / Output row / Temp) ────── */
     .section {
       display: grid;
-      gap: 0;
-      padding: 10px 20px 20px;
+      column-gap: 48px;
+      padding: 24px;
     }
-    .section-input  { background: var(--bg-card); grid-template-columns: repeat(4, 1fr); padding: 29px 20px 20px; }
-    .section-output { background: transparent;    grid-template-columns: repeat(4, 1fr); padding: 20px; }
+    .section-input  { background: var(--bg-card); grid-template-columns: repeat(4, 1fr); padding: 24px; border-bottom: 1px solid var(--c-divider); }
+    .section-output { background: transparent;    grid-template-columns: repeat(4, 1fr); }
     .section-temp   { background: var(--bg-card); grid-template-columns: repeat(2, 1fr); }
-    .section-temp .col-head { padding: 12px 0 0; min-height: 55px; align-items: flex-start; }
-    .section-temp .fields { padding-top: 8px; }
+    .section-temp .col-head { padding: 0; min-height: 24px; align-items: flex-start; }
+    .section-temp .fields { padding: 0; }
 
     /* ── Formula column ──────────────────────────────────── */
     .col {
-      padding: 0 20px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 48px;
     }
 
     .col-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
-      min-height: 40px;
+      padding: 0;
+      min-height: 24px;
       flex-shrink: 0;
     }
     .col-head-label {
@@ -341,7 +344,7 @@
       position: absolute;
       top: 2px; left: 2px;
       width: 10px; height: 10px;
-      background: #161616;
+      background: #0c0c0c;
       border-radius: 50%;
       transition: transform 0.2s;
     }
@@ -352,7 +355,7 @@
     .fields {
       display: flex;
       flex-direction: column;
-      padding-top: 24px;
+      gap: 24px;
       flex: 1;
     }
 
@@ -360,9 +363,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
+      padding: 0;
       font-size: 13px;
-      height: 73px;
       flex-shrink: 0;
       gap: 8px;
     }
@@ -711,8 +713,9 @@
     html[data-theme="light"] {
       --bg-html: #FFFFFF;
       --bg-page: #f5f5f5;
-      --bg-outer: #f0f0f0;
-      --bg-card: #f8f8f8;
+      --bg-outer: #fafafa;
+      --bg-card: #fafafa;
+      --c-divider: #e7e7e7;
       --bg-input: #e8e8e8;
       --bg-in-hov: #d7d7d7;
       --bg-tab-on: #d7d7d7;
@@ -760,7 +763,6 @@
     [data-theme="light"] .preset-trigger:hover { stroke: #585858; }
     [data-theme="light"] .tog-track { background: #d7d7d7; }
     [data-theme="light"] .tog-thumb { background: #ffffff; }
-    [data-theme="light"] .section-output { background: #F3F3F3; }
     [data-theme="light"] .tooltip {
       background: rgba(255, 255, 255, 0.80);
       -webkit-backdrop-filter: blur(5px);
