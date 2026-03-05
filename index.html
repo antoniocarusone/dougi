@@ -784,8 +784,17 @@
         grid-template-columns: 1fr;
         padding: 8px 4px 12px;
       }
+      .section-temp { grid-template-rows: auto auto; row-gap: 0; align-items: start; }
+      .section-temp .col { display: flex; }
+      .section-temp .col .col-head,
+      .section-temp .col .fields { grid-column: auto; grid-row: auto; }
+      .section-temp .fields { flex: none; }
+      .spacer-sm { display: none; }
+      .col-head-formula { white-space: normal; position: static; }
+      .col-head { height: auto; }
       .col { border-bottom: 1px solid var(--c-border); padding: 0 12px 8px; }
       .col:last-child { border-bottom: none; }
+      .col + .col { padding-top: 8px; }
       .page-footer { flex-direction: column; gap: 12px; align-items: center; }
     }
 
