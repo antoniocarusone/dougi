@@ -1,6 +1,9 @@
-const CACHE = 'dougi-v1.2';
+const CACHE = 'dougi-v1.5';
 const ASSETS = [
   './index.html',
+  './about.html',
+  './changelog.html',
+  './privacy.html',
   './manifest.json',
   './icon.svg',
   'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap',

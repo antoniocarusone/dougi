@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>Dougi — Privacy Policy</title>
+  <meta name="description" content="Privacy policy for Dougi, a bread dough calculator.">
+  <link rel="icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .no-transitions, .no-transitions *, .no-transitions *::before, .no-transitions *::after {
+      transition: none !important;
+    }
+
+    :root {
+      --bg: #000000;
+      --c-primary: #ffffff;
+      --c-grid: #1c1c1c;
+      --c-sub: #8f8f8f;
+      --c-body: #8f8f8f;
+      --c-switch: #343434;
+      --c-btn: #8f8f8f;
+      --c-btn-border: #1c1c1c;
+      --c-btn-fill: #171717;
+      --c-donate-text: #616161;
+      --c-donate-btn: #9e9e9e;
+      --c-heart: #c26bd2;
+      --font: 'IBM Plex Mono', 'Courier New', monospace;
+      --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    html[data-theme="light"] {
+      --bg: #fafafa;
+      --c-primary: #000000;
+      --c-grid: #e7e7e7;
+      --c-sub: #818181;
+      --c-body: #636363;
+      --c-switch: #bebebe;
+      --c-btn: #616161;
+      --c-btn-border: #e7e7e7;
+      --c-btn-fill: #eaeaea;
+      --c-donate-text: #888888;
+      --c-donate-btn: #0f0f0f;
+      --c-heart: #b849cc;
+    }
+
+    html { background: var(--bg); }
+    body { font-family: var(--font); min-height: 100vh; padding: 12px; }
+    .page { max-width: 1000px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Grid ─────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 250px repeat(5, 1fr);
+      border-top: 1px solid var(--c-grid);
+      border-left: 1px solid var(--c-grid);
+    }
+    .cell {
+      border-right: 1px solid var(--c-grid);
+      border-bottom: 1px solid var(--c-grid);
+      min-height: 250px;
+    }
+    .cell--hero {
+      grid-column: 2 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-title {
+      font-family: var(--font-sans);
+      font-size: 128px;
+      font-weight: 500;
+      letter-spacing: -5.12px;
+      color: var(--c-primary);
+    }
+
+    /* ── Content ──────────────────────────────────────────── */
+    .cell--content {
+      grid-column: 2 / 4;
+      grid-row: 2 / 6;
+      padding: 28px;
+    }
+    .privacy-date {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--c-body);
+      margin-bottom: 32px;
+    }
+    .privacy-section { margin-bottom: 28px; }
+    .privacy-section:last-child { margin-bottom: 0; }
+    .privacy-heading {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 24px;
+      color: var(--c-primary);
+      margin-bottom: 8px;
+    }
+    .privacy-text {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--c-body);
+    }
+    .privacy-text ul {
+      list-style: none;
+      padding: 0;
+    }
+    .privacy-text li { padding-left: 16px; position: relative; }
+    .privacy-text li::before {
+      content: "\2022";
+      position: absolute;
+      left: 0;
+    }
+    .privacy-text li + li { margin-top: 4px; }
+    .privacy-text a {
+      color: var(--c-body);
+      text-decoration: underline;
+      transition: opacity 0.15s;
+    }
+    .privacy-text a:hover { opacity: 0.7; }
+
+    /* ── Responsive: mobile / tablet ──────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0 20px; }
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .cell {
+        min-height: auto;
+        padding: 20px;
+      }
+      .cell:not(.cell--hero):not(.cell--content) {
+        display: none;
+      }
+      .cell--hero {
+        grid-column: 1;
+      }
+      .hero-title {
+        font-size: 64px;
+        letter-spacing: -2.56px;
+      }
+      .cell--content {
+        grid-column: 1;
+        grid-row: auto;
+        padding: 20px;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0 20px; }
+    }
+  </style>
+  <script src="header.js"></script>
+  <script src="footer.js"></script>
+</head>
+<body>
+  <div class="page">
+    <site-header active="privacy"></site-header>
+
+    <main class="grid">
+      <!-- Row 1: hero -->
+      <div class="cell"></div>
+      <div class="cell cell--hero">
+        <h1 class="hero-title">Privacy</h1>
+      </div>
+      <div class="cell"></div>
+
+      <!-- Rows 2-6: side cells + content -->
+      <div class="cell"></div>
+      <div class="cell cell--content">
+        <p class="privacy-date">Effective March 6, 2026</p>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">What Dougi Stores</h2>
+          <div class="privacy-text">
+            <p>Dougi runs entirely in your browser. Nothing you enter leaves your device. Your recipe inputs, preferences (theme, units, yeast type), and settings are saved to your browser's local storage so they persist between sessions. We have no servers that receive or store your data.</p>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">No Accounts, No Tracking</h2>
+          <div class="privacy-text">
+            <p>Dougi does not require an account, login, or any personal information. There are no analytics, no cookies, and no tracking of any kind.</p>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">Third-Party Services</h2>
+          <div class="privacy-text">
+            <p>Dougi loads one external resource — the IBM Plex Mono typeface from Google Fonts. This is a standard font request and does not transmit any personal data. No other third-party services are used within the app.</p>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">Offline Use</h2>
+          <div class="privacy-text">
+            <p>Dougi is a progressive web app. Once installed, it works fully offline. No network connection is needed to use the calculator.</p>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">Your Control</h2>
+          <div class="privacy-text">
+            <p>All data lives in your browser. You can clear it at any time through your browser's storage settings. There is nothing to opt out of — we don't collect anything.</p>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <h2 class="privacy-heading">Contact</h2>
+          <div class="privacy-text">
+            <p>If you have questions about this policy, reach out at <a id="contact-link"></a>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="cell"></div>
+
+      <div class="cell"></div>
+      <div class="cell"></div>
+
+      <div class="cell"></div>
+      <div class="cell"></div>
+
+      <div class="cell"></div>
+      <div class="cell"></div>
+
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </main>
+
+    <site-footer></site-footer>
+  </div>
+
+  <script>
+  // Obfuscate email from spam crawlers
+  (function(){var a='hi',b='dougi.app',m='mailto:'+a+'@'+b;var e=document.getElementById('contact-link');if(e){e.href=m;e.textContent=a+'@'+b;}})();
+  </script>
+</body>
+</html>

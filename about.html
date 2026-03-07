@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>Dougi — Bread Dough Calculator for Precision Bakers</title>
+  <meta name="description" content="Dougi is a bread dough calculator built for bakers who care about precision. Scale recipes, calculate preferment ratios, dial in water temperature, and more.">
+  <meta name="keywords" content="bread calculator, dough calculator, baker's percentage, preferment calculator, autolyse, water temperature, bread baking, sourdough, yeast calculator">
+  <link rel="canonical" href="https://dougi.app/about">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dougi — Bread Dough Calculator for Precision Bakers">
+  <meta property="og:description" content="Scale recipes, calculate preferment ratios, and dial in water temperature. Dougi handles the math so you can focus on the bake.">
+  <meta property="og:url" content="https://dougi.app/about">
+  <meta property="og:image" content="https://dougi.app/og-image.png">
+  <meta property="og:site_name" content="Dougi">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dougi — Bread Dough Calculator for Precision Bakers">
+  <meta name="twitter:description" content="Scale recipes, calculate preferment ratios, and dial in water temperature. Dougi handles the math so you can focus on the bake.">
+  <meta name="twitter:image" content="https://dougi.app/og-image.png">
+  <link rel="icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .no-transitions, .no-transitions *, .no-transitions *::before, .no-transitions *::after {
+      transition: none !important;
+    }
+
+    :root {
+      --bg: #000000;
+      --c-primary: #ffffff;
+      --c-grid: #1c1c1c;
+      --c-sub: #8f8f8f;
+      --c-desc-sub: #5a5a5a;
+      --c-body: #8f8f8f;
+      --c-switch: #343434;
+      --c-btn: #8f8f8f;
+      --c-btn-border: #1c1c1c;
+      --c-btn-fill: #171717;
+      --c-donate-text: #616161;
+      --c-donate-btn: #9e9e9e;
+      --c-heart: #c26bd2;
+      --c-preview-bg: #0c0c0c;
+      --c-preview-border: #202020;
+      --c-preview-tab: #323232;
+      --c-preview-line: #1b1b1b;
+      --c-preview-accent: #2a1e2e;
+      --c-icon: #42A18C;
+      --c-creator-bg: #0d0d0d;
+      --c-creator-border: #282828;
+      --font: 'IBM Plex Mono', 'Courier New', monospace;
+      --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    html[data-theme="light"] {
+      --bg: #fafafa;
+      --c-primary: #000000;
+      --c-grid: #e7e7e7;
+      --c-sub: #818181;
+      --c-desc-sub: #8c8c8c;
+      --c-body: #838383;
+      --c-switch: #bebebe;
+      --c-btn: #616161;
+      --c-btn-border: #e7e7e7;
+      --c-btn-fill: #eaeaea;
+      --c-donate-text: #888888;
+      --c-donate-btn: #0f0f0f;
+      --c-heart: #b849cc;
+      --c-preview-bg: #ffffff;
+      --c-preview-border: #e7e7e7;
+      --c-preview-tab: #e5e5e5;
+      --c-preview-line: #f3f3f3;
+      --c-preview-accent: #f3e8f6;
+      --c-icon: #069AC6;
+      --c-creator-bg: #ffffff;
+      --c-creator-border: #dadada;
+    }
+
+    html { background: var(--bg); }
+    body { font-family: var(--font); min-height: 100vh; padding: 12px; }
+    .page { max-width: 1000px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Grid ────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 500px repeat(4, 333.33px);
+      border-top: 1px solid var(--c-grid);
+      border-left: 1px solid var(--c-grid);
+    }
+    .cell {
+      border-right: 1px solid var(--c-grid);
+      border-bottom: 1px solid var(--c-grid);
+      padding: 40px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Hero (row 1, spans 3 cols) ──────────────────────── */
+    .cell--hero {
+      grid-column: 1 / -1;
+      position: relative;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 0 40px;
+      position: relative;
+      z-index: 3;
+    }
+    .hero-title {
+      font-family: var(--font-sans);
+      font-size: 120px;
+      font-weight: 500;
+      letter-spacing: -4.8px;
+      color: var(--c-primary);
+      line-height: 1;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      height: 44px;
+      border-radius: 22px;
+      background: var(--c-primary);
+      color: var(--bg);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      width: fit-content;
+    }
+    .hero-cta:hover { opacity: 0.8; }
+
+    /* ── Hero gradients ──────────────────────────────────── */
+    .hero-fade {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hero-fade--bottom {
+      bottom: 0; left: 0; right: 0;
+      height: 262px;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+    .hero-fade--right {
+      top: 0; bottom: 0; right: 0;
+      width: 350px;
+      background: linear-gradient(to left, var(--bg), transparent);
+    }
+
+    /* ── App preview (in hero) ───────────────────────────── */
+    .preview {
+      position: absolute;
+      left: 500px;
+      top: 50px;
+      width: 500px;
+      z-index: 1;
+      border-radius: 16px;
+    }
+    .preview img {
+      width: 500px;
+      height: auto;
+      border-radius: 16px;
+    }
+    .preview img.preview-dark { display: block; }
+    .preview img.preview-light { display: none; }
+    html[data-theme="light"] .preview img.preview-dark { display: none; }
+    html[data-theme="light"] .preview img.preview-light { display: block; }
+
+    /* ── Description cell (row 2, span 2 cols) ───────────── */
+    .cell--desc {
+      grid-column: span 2;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .desc-title {
+      font-family: var(--font-sans);
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 29px;
+      color: var(--c-primary);
+      margin-bottom: 16px;
+    }
+    .desc-sub {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--c-desc-sub);
+    }
+
+    /* ── Feature cells ───────────────────────────────────── */
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: auto;
+      color: var(--c-icon);
+    }
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .feature-title {
+      font-family: var(--font-sans);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--c-primary);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-family: var(--font-sans);
+      font-size: 18px;
+      line-height: 24px;
+      color: var(--c-body);
+    }
+
+    /* ── Creator cell (row 5, col 3) ─────────────────────── */
+    .cell--creator {
+      padding: 0;
+      position: relative;
+      display: block;
+    }
+    .creator-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      width: 100%;
+      height: 100%;
+    }
+    .creator-grid div {
+      border-right: 1px solid var(--c-grid);
+      border-bottom: 1px solid var(--c-grid);
+    }
+    .creator-grid div:nth-child(12n) { border-right: none; }
+    .creator-grid div:nth-last-child(-n+12) { border-bottom: none; }
+    .creator-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 275px;
+      padding: 20px;
+      background: var(--c-creator-bg);
+      border: 1px solid var(--c-creator-border);
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      line-height: 18px;
+      color: var(--c-body);
+      text-align: left;
+    }
+    .creator-card strong {
+      color: var(--c-primary);
+      font-weight: 400;
+    }
+
+    /* ── Responsive: mobile / tablet ──────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0 20px; }
+      /* Grid: single column, auto rows */
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      /* Hero: 500px tall, centered column layout */
+      .cell--hero {
+        height: 500px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 100px 28px;
+      }
+      .hero-left {
+        align-items: center;
+        gap: 16px;
+        padding: 0;
+      }
+      .hero-title {
+        font-size: 96px;
+        letter-spacing: -3.84px;
+        text-align: center;
+      }
+
+      /* App preview: visible, peeking from right */
+      .preview {
+        left: calc(50% + 94px);
+        transform: translateX(-50%);
+        top: 250px;
+        width: 500px;
+      }
+      .preview img {
+        width: 500px;
+      }
+
+      /* Gradients */
+      .hero-fade--bottom {
+        height: 120px;
+      }
+      .hero-fade--right {
+        width: 90px;
+      }
+
+      /* Description */
+      .cell--desc {
+        grid-column: 1;
+        padding: 20px;
+        gap: 20px;
+      }
+
+      /* Feature cells */
+      .cell {
+        padding: 20px;
+      }
+
+      .feature-icon {
+        margin-bottom: 28px;
+      }
+
+      /* Hero padding (after .cell to win specificity) */
+      .cell--hero {
+        padding: 60px 28px;
+      }
+
+      /* Creator cell */
+      .cell--creator {
+        height: 333.33px;
+        padding: 0;
+      }
+      .creator-card {
+        width: 275px;
+      }
+
+    }
+
+    /* ── Responsive: small mobile ─────────────────────── */
+    @media (max-width: 480px) {
+      body { padding: 0 20px; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Dougi",
+    "url": "https://dougi.app",
+    "description": "A bread dough calculator built for bakers who care about precision. Scale recipes, calculate preferment ratios, and dial in water temperature.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Person",
+      "name": "Antonio Carusone"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Baker's percentage recipe calculator",
+      "Scale by quantity and weight",
+      "Autolyse calculation",
+      "Water temperature calculator",
+      "Formula presets for common dough styles",
+      "Preferment and bassinage support",
+      "Yeast type conversion",
+      "Metric and imperial unit systems",
+      "Contextual info and ideal ranges"
+    ]
+  }
+  </script>
+  <script src="header.js"></script>
+  <script src="footer.js"></script>
+</head>
+<body>
+  <div class="page">
+    <site-header active="about"></site-header>
+
+    <!-- ── Unified Grid ──────────────────────────────────── -->
+    <main class="grid">
+
+      <!-- Row 1: Hero (spans 3 cols) -->
+      <div class="cell cell--hero">
+        <div class="hero-left">
+          <h1 class="hero-title">Dougi</h1>
+          <a class="hero-cta" href="index.html">Get bakin'</a>
+        </div>
+        <div class="preview">
+          <img class="preview-dark" src="app-dark.png" alt="Dougi bread dough calculator app showing recipe formula with baker's percentages, yield settings, and preferment calculations">
+          <img class="preview-light" src="app-light.png" alt="Dougi bread dough calculator app showing recipe formula with baker's percentages, yield settings, and preferment calculations">
+        </div>
+        <div class="hero-fade hero-fade--bottom"></div>
+        <div class="hero-fade hero-fade--right"></div>
+      </div>
+
+      <!-- Row 2: Description (span 2) + Recipe -->
+      <div class="cell cell--desc">
+        <h2 class="desc-title">A bread dough calculator<br>built for bakers who care about precision.</h2>
+        <p class="desc-sub">Whether you're scaling a recipe, calculating preferment ratios, or dialing in your water temperature, Dougi handles the math so you can focus on the bake.</p>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M8.16 22C3.98 22 3.14 19.47 4.5 16.39L8.75 6.74H8.45C7.8 6.74 7.2 6.48 6.77 6.05C6.33 5.62 6.07 5.02 6.07 4.37C6.07 3.07 7.13 2 8.44 2H15.55C16.21 2 16.8 2.27 17.23 2.7C17.79 3.26 18.07 4.08 17.86 4.95C17.59 6.03 16.55 6.74 15.44 6.74H15.28L19.5 16.4C20.85 19.48 19.97 22 15.83 22H8.16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5.94 13.12C5.94 13.12 9 13 12 14C15 15 17.83 13.11 17.83 13.11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Recipe</h3>
+        <div class="feature-desc">Use the baker's percentages to break out the amount of each ingredients.</div>
+      </div>
+
+      <!-- Row 3: Scale, Autolyse, Water Temp -->
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M10 22H14C19 22 21 20 21 15V9C21 4 19 2 14 2H10C5 2 3 4 3 9V15C3 20 5 22 10 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17.25 8.29C14.26 5.63 9.74 5.63 6.75 8.29L8.93 11.79C10.68 10.23 13.32 10.23 15.07 11.79L17.25 8.29Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Scale by Quantity &amp; Weight</h3>
+        <div class="feature-desc">Set how many loaves you're making and the target weight per loaf.</div>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 8V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 2H15" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Autolyse</h3>
+        <div class="feature-desc">Pre-calculated flour and water weights for your autolyse step alongside your recipe.</div>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M2 13.1L4.5 11.6C6.04 10.68 7.96 10.68 9.5 11.6C11.04 12.52 12.96 12.52 14.5 11.6C16.04 10.68 17.96 10.68 19.5 11.6L22 13.1" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 3.9L4.5 5.4C6.04 6.32 7.96 6.32 9.5 5.4C11.04 4.48 12.96 4.48 14.5 5.4C16.04 6.32 17.96 6.32 19.5 5.4L22 3.9" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 20.1L4.5 18.6C6.04 17.68 7.96 17.68 9.5 18.6C11.04 19.52 12.96 19.52 14.5 18.6C16.04 17.68 17.96 17.68 19.5 18.6L22 20.1" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Water Temperature</h3>
+        <div class="feature-desc">Work out your ideal water temperature based on flour, room, and preferment temps.</div>
+      </div>
+
+      <!-- Row 4: Formula Presets, Preferment, Yeast Type -->
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M7.01 18L3 13.99C1.66 12.65 1.66 11.32 3 9.97998L9.68 3.29999L17.03 10.65C17.4 11.02 17.4 11.62 17.03 11.99L11.01 18.01C9.69 19.33 8.35 19.33 7.01 18Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.35 1.95001L9.69 3.28998" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.07 11.92L17.19 11.26" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 22H16" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.85 15C18.85 15 17 17.01 17 18.24C17 19.26 17.83 20.09 18.85 20.09C19.87 20.09 20.7 19.26 20.7 18.24C20.7 17.01 18.85 15 18.85 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Formula Presets</h3>
+        <div class="feature-desc">Start from a built-in preset for common dough styles, or dial in your own from scratch.</div>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M10 4H14C18.42 4 22 7.58 22 12C22 16.42 18.42 20 14 20H10C5.58 20 2 16.42 2 12C2 7.58 5.58 4 10 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 16C16.2091 16 18 14.2091 18 12C18 9.79086 16.2091 8 14 8C11.7909 8 10 9.79086 10 12C10 14.2091 11.7909 16 14 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Preferment &amp; Bassinage</h3>
+        <div class="feature-desc">Include or exclude preferment and bassinage in your recipe on the fly.</div>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M15.59 12.26C18.4232 12.26 20.72 9.96323 20.72 7.13C20.72 4.29678 18.4232 2 15.59 2C12.7568 2 10.46 4.29678 10.46 7.13C10.46 9.96323 12.7568 12.26 15.59 12.26Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+            <path d="M6.35999 19.44C8.06102 19.44 9.44 18.061 9.44 16.36C9.44 14.659 8.06102 13.28 6.35999 13.28C4.65895 13.28 3.28 14.659 3.28 16.36C3.28 18.061 4.65895 19.44 6.35999 19.44Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+            <path d="M16.62 22C18.0338 22 19.18 20.8539 19.18 19.44C19.18 18.0262 18.0338 16.88 16.62 16.88C15.2061 16.88 14.06 18.0262 14.06 19.44C14.06 20.8539 15.2061 22 16.62 22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Yeast Type</h3>
+        <div class="feature-desc">Switch between fresh, active dry, and instant yeast and Dougi will adjusts the formula.</div>
+      </div>
+
+      <!-- Row 5: Unit System, Contextual Info, Creator -->
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 17H19C21 17 22 16 22 14V10C22 8 21 7 19 7H5C3 7 2 8 2 10V14C2 16 3 17 5 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M18 7V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 7V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M10.05 7L10 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M14 7V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Unit System</h3>
+        <div class="feature-desc">Work in grams or ounces, Fahrenheit or Celsius, whichever feels like home.</div>
+      </div>
+      <div class="cell">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12.64 8.53L17.49 9.76" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.66 12.4L14.56 13.14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Contextual Info</h3>
+        <div class="feature-desc">Hover over items to learn what they mean, and view calculations and ideal ranges.</div>
+      </div>
+      <div class="cell cell--creator">
+        <div class="creator-grid">
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <div class="creator-card">
+          <strong>Dougi</strong> was created by <strong>Antonio Carusone</strong>, a designer who bakes, or a baker who designs, depending on the day.
+        </div>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>Dougi — Changelog</title>
+  <meta name="description" content="Version history for Dougi, a bread dough calculator.">
+  <link rel="icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .no-transitions, .no-transitions *, .no-transitions *::before, .no-transitions *::after {
+      transition: none !important;
+    }
+
+    :root {
+      --bg: #000000;
+      --c-primary: #ffffff;
+      --c-grid: #1c1c1c;
+      --c-sub: #8f8f8f;
+      --c-dim: #5a5a5a;
+      --c-body: #8f8f8f;
+      --c-switch: #343434;
+      --c-btn: #8f8f8f;
+      --c-btn-border: #1c1c1c;
+      --c-btn-fill: #171717;
+      --c-donate-text: #616161;
+      --c-donate-btn: #9e9e9e;
+      --c-heart: #c26bd2;
+      --font: 'IBM Plex Mono', 'Courier New', monospace;
+      --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    html[data-theme="light"] {
+      --bg: #fafafa;
+      --c-primary: #000000;
+      --c-grid: #e7e7e7;
+      --c-sub: #818181;
+      --c-dim: #a9a9a9;
+      --c-body: #838383;
+      --c-switch: #bebebe;
+      --c-btn: #616161;
+      --c-btn-border: #e7e7e7;
+      --c-btn-fill: #eaeaea;
+      --c-donate-text: #888888;
+      --c-donate-btn: #0f0f0f;
+      --c-heart: #b849cc;
+    }
+
+    html { background: var(--bg); }
+    body { font-family: var(--font); min-height: 100vh; padding: 12px; }
+    .page { max-width: 1000px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Grid ─────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--c-grid);
+      border-left: 1px solid var(--c-grid);
+    }
+    .cell {
+      border-right: 1px solid var(--c-grid);
+      border-bottom: 1px solid var(--c-grid);
+      min-height: 250px;
+    }
+    .cell--hero {
+      grid-column: span 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (min-width: 769px) {
+      .cell--hero + .cell:not(.version) {
+        border-right: none;
+        margin-top: -1px;
+        border-top: 1px solid var(--bg);
+      }
+    }
+    .hero-title {
+      font-family: var(--font-sans);
+      font-size: 128px;
+      font-weight: 500;
+      letter-spacing: -5.12px;
+      color: var(--c-primary);
+    }
+
+    /* ── Version cards ────────────────────────────────────── */
+    .version { padding: 28px; }
+    .version-date {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--c-dim);
+      margin-bottom: 12px;
+    }
+    .version-name {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--c-primary);
+      margin-bottom: 12px;
+    }
+    .version-changes {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 20px;
+      color: var(--c-body);
+    }
+    .version-changes p + p { margin-top: 4px; }
+
+    /* ── Responsive: mobile / tablet ──────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0 20px; }
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .cell {
+        min-height: auto;
+        padding: 20px;
+      }
+      .cell:not(.cell--hero):not(.version) {
+        display: none;
+      }
+      .cell--hero {
+        grid-column: 1;
+      }
+      .hero-title {
+        font-size: 64px;
+        letter-spacing: -2.56px;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0 20px; }
+    }
+  </style>
+  <script src="header.js"></script>
+  <script src="footer.js"></script>
+</head>
+<body>
+  <div class="page">
+    <site-header active="changelog"></site-header>
+
+    <main class="grid">
+      <div class="cell cell--hero">
+        <h1 class="hero-title">Changelog</h1>
+      </div>
+      <div class="cell"></div>
+
+      <div class="cell version">
+        <div class="version-date">Mar. 07, 2026</div>
+        <div class="version-name">v1.5</div>
+        <div class="version-changes">
+          <p>Added new About and Changelog sections</p>
+          <p>UI and color refinements</p>
+        </div>
+      </div>
+      <div class="cell version">
+        <div class="version-date">Mar. 04, 2026</div>
+        <div class="version-name">v1.2</div>
+        <div class="version-changes">
+          <p>UI and color refinements</p>
+          <p>Flour percentage made uneditable</p>
+        </div>
+      </div>
+      <div class="cell version">
+        <div class="version-date">Mar. 03, 2026</div>
+        <div class="version-name">v1.0</div>
+        <div class="version-changes">
+          <p>Initial Release</p>
+        </div>
+      </div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+
+    </main>
+
+    <site-footer></site-footer>
+  </div>
+
+</body>
+</html>
