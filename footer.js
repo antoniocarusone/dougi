@@ -25,11 +25,13 @@
     + '.sf-copyright { font-size: 10px; color: var(--c-sub); text-transform: uppercase; }'
     + '.sf-link { font-size: 10px; color: var(--c-sub); text-transform: uppercase; text-decoration: none; transition: opacity 0.15s; }'
     + '.sf-link:hover { opacity: 0.7; }'
-    + '.sf-switch { display: flex; align-items: center; box-shadow: inset 0 0 0 1px var(--c-switch); border-radius: 999px; }'
-    + '.sf-btn { display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 999px; border: 1px solid transparent; background: transparent; cursor: pointer; transition: border-color 0.15s, background 0.15s; }'
-    + '.sf-btn.active { border-color: var(--c-switch); background: var(--bg); }'
+    + '.sf-switch { display: flex; align-items: center; box-shadow: inset 0 0 0 1px var(--c-switch); border-radius: 999px; position: relative; }'
+    + '.sf-indicator { position: absolute; width: 30px; height: 30px; border-radius: 999px; border: 1px solid var(--c-switch); background: var(--bg); pointer-events: none; transition: transform 0.2s ease-out; }'
+    + '.no-transitions .sf-indicator { transition: transform 0.2s ease-out !important; }'
+    + '.sf-btn { display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 999px; border: 1px solid transparent; background: transparent; cursor: pointer; position: relative; z-index: 1; }'
     + '.sf-btn.active svg { stroke: var(--c-primary) !important; }'
-    + '.sf-btn svg { width: 18px; height: 18px; stroke: var(--c-switch); }'
+    + '.sf-btn:not(.active):hover svg { stroke: var(--c-sub); }'
+    + '.sf-btn svg { width: 18px; height: 18px; stroke: var(--c-switch); transition: stroke 0.15s; }'
     + '@media (max-width: 768px) {'
     + '  .sf { flex-wrap: wrap; gap: 28px; }'
     + '  .sf-left { display: contents; }'
@@ -46,6 +48,7 @@
       + '<a href="privacy.html" class="sf-link">Privacy Policy</a>'
       + '</div>'
       + '<div class="sf-switch">'
+      + '<div class="sf-indicator"></div>'
       + '<button class="sf-btn" data-theme="light" title="Light">' + SUN_SVG + '</button>'
       + '<button class="sf-btn" data-theme="system" title="System">' + SYSTEM_SVG + '</button>'
       + '<button class="sf-btn" data-theme="dark" title="Dark">' + MOON_SVG + '</button>'
@@ -72,16 +75,29 @@
 
       var self = this;
       var buttons = self.querySelectorAll('.sf-btn');
+      var indicator = self.querySelector('.sf-indicator');
+      var themeOrder = { light: 0, system: 1, dark: 2 };
 
-      function setActive(choice) {
+      function moveIndicator(choice, animate) {
+        var idx = themeOrder[choice] || 0;
+        if (!animate) indicator.style.transition = 'none';
+        indicator.style.transform = 'translateX(' + (idx * 30) + 'px)';
+        if (!animate) {
+          indicator.offsetHeight;
+          indicator.style.transition = '';
+        }
+      }
+
+      function setActive(choice, animate) {
         buttons.forEach(function (btn) {
           btn.classList.toggle('active', btn.getAttribute('data-theme') === choice);
         });
+        moveIndicator(choice, animate);
       }
 
       var saved = localStorage.getItem(STORAGE_KEY) || 'system';
       applyTheme(saved);
-      setActive(saved);
+      setActive(saved, false);
 
       window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function () {
         var current = localStorage.getItem(STORAGE_KEY) || 'system';
@@ -102,7 +118,7 @@
           localStorage.setItem(STORAGE_KEY, choice);
           document.documentElement.classList.add('no-transitions');
           applyTheme(choice);
-          setActive(choice);
+          setActive(choice, true);
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               document.documentElement.classList.remove('no-transitions');
