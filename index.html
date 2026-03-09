@@ -828,7 +828,7 @@
           <div class="field">
             <span class="field-lbl">Flour</span>
             <div class="out-pill">
-              <input type="number" id="flourPct" value="100" hidden readonly>
+              <input type="number" id="flourPct" value="100" hidden readonly autocomplete="nope">
               <span class="out-val">100</span>
               <span class="unit">%</span>
             </div>
@@ -836,21 +836,21 @@
           <div class="field">
             <span class="field-lbl">Water</span>
             <div class="in-pill">
-              <input type="number" id="waterPct" value="70" min="1" max="200" step="1">
+              <input type="number" id="waterPct" value="70" min="1" max="200" step="1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Yeast</span>
             <div class="in-pill">
-              <input type="number" id="yeastPct" value="3" min="0.1" max="20" step="0.1">
+              <input type="number" id="yeastPct" value="3" min="0.1" max="20" step="0.1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Salt</span>
             <div class="in-pill">
-              <input type="number" id="saltPct" value="2" min="0.1" max="10" step="0.1">
+              <input type="number" id="saltPct" value="2" min="0.1" max="10" step="0.1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
@@ -873,21 +873,21 @@
           <div class="field">
             <span class="field-lbl">Quantity</span>
             <div class="in-pill">
-              <input type="number" id="loaves" value="4" min="1" max="99" step="1">
+              <input type="number" id="loaves" value="4" min="1" max="99" step="1" autocomplete="nope">
               <span class="unit">x</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Weight per</span>
             <div class="in-pill">
-              <input type="number" id="loafWeight" value="330" min="50" max="5000" step="10">
+              <input type="number" id="loafWeight" value="330" min="50" max="5000" step="10" autocomplete="nope">
               <span class="unit">g</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Process Loss</span>
             <div class="in-pill">
-              <input type="number" id="processLoss" value="1" min="0" max="20" step="0.5">
+              <input type="number" id="processLoss" value="1" min="0" max="20" step="0.5" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
@@ -907,7 +907,7 @@
         <div class="col-head">
           <span class="col-head-label"><span class="tooltip-label">Preferment<div class="tooltip"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">Preferment is a portion of dough made in advance and left to ferment, which enhances flavor and texture.</span></div></span></span>
           <label class="tog">
-            <input type="checkbox" id="prefOn" checked>
+            <input type="checkbox" id="prefOn" checked autocomplete="nope">
             <div class="tog-track"></div>
             <div class="tog-thumb"></div>
           </label>
@@ -916,21 +916,21 @@
           <div class="field">
             <span class="field-lbl">Pct. of Flour</span>
             <div class="in-pill">
-              <input type="number" id="prefFlourPct" value="20" min="1" max="100" step="1">
+              <input type="number" id="prefFlourPct" value="20" min="1" max="100" step="1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Hydration</span>
             <div class="in-pill">
-              <input type="number" id="prefHydration" value="100" min="1" max="200" step="1">
+              <input type="number" id="prefHydration" value="100" min="1" max="200" step="1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Pct. of Yeast</span>
             <div class="in-pill">
-              <input type="number" id="prefYeastPct" value="0.3" min="0.01" max="5" step="0.1">
+              <input type="number" id="prefYeastPct" value="0.3" min="0.01" max="5" step="0.1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
@@ -942,7 +942,7 @@
         <div class="col-head">
           <span class="col-head-label"><span class="tooltip-label">Bassinage<div class="tooltip tooltip-right"><svg class="tooltip-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#42a18c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.66 10.44L20.68 14.62C19.84 18.23 18.18 19.69 15.06 19.39C14.56 19.35 14.02 19.26 13.44 19.12L11.76 18.72C7.59 17.73 6.3 15.67 7.28 11.49L8.26 7.3C8.46 6.45 8.7 5.71 9 5.1C10.17 2.68 12.16 2.03 15.5 2.82L17.17 3.21C21.36 4.19 22.64 6.26 21.66 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.16 22.27 5.07 21.2 3.78 17.23L2.5 13.28C1.22 9.31 2.28 7.21 6.25 5.93L7.83 5.41C8.24 5.28 8.63 5.17 9 5.1C8.7 5.71 8.46 6.45 8.26 7.3L7.28 11.49C6.3 15.67 7.59 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53L17.49 9.76"/><path d="M11.66 12.4L14.56 13.14"/></svg><span class="tooltip-text">Bassinage is a technique of holding back a portion of water, then slowly adding it to improve dough strength.</span></div></span></span>
           <label class="tog">
-            <input type="checkbox" id="bassOn" checked>
+            <input type="checkbox" id="bassOn" checked autocomplete="nope">
             <div class="tog-track"></div>
             <div class="tog-thumb"></div>
           </label>
@@ -951,7 +951,7 @@
           <div class="field">
             <span class="field-lbl">Pct. of Water</span>
             <div class="in-pill">
-              <input type="number" id="bassWaterPct" value="7" min="1" max="50" step="1">
+              <input type="number" id="bassWaterPct" value="7" min="1" max="50" step="1" autocomplete="nope">
               <span class="unit">%</span>
             </div>
           </div>
@@ -1110,7 +1110,7 @@
               <span class="field-hint" id="ddt-hint">IDEAL: 75–78°F, 24–26°C</span>
             </div>
             <div class="in-pill">
-              <input type="number" id="ddt" value="76" min="32" max="212" step="1">
+              <input type="number" id="ddt" value="76" min="32" max="212" step="1" autocomplete="nope">
               <span class="unit">°</span>
             </div>
           </div>
@@ -1144,14 +1144,14 @@
           <div class="field">
             <span class="field-lbl">Flour Temperature</span>
             <div class="in-pill">
-              <input type="number" id="flourTemp" value="69" min="-20" max="200" step="1">
+              <input type="number" id="flourTemp" value="69" min="-20" max="200" step="1" autocomplete="nope">
               <span class="unit">°</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Room Temperature</span>
             <div class="in-pill">
-              <input type="number" id="roomTemp" value="69" min="-20" max="200" step="1">
+              <input type="number" id="roomTemp" value="69" min="-20" max="200" step="1" autocomplete="nope">
               <span class="unit">°</span>
             </div>
           </div>
@@ -1159,20 +1159,20 @@
             <div class="field-lbl">
               <span>Preferment Temp</span>
               <label class="tog">
-                <input type="checkbox" id="prefTempOn" checked>
+                <input type="checkbox" id="prefTempOn" checked autocomplete="nope">
                 <div class="tog-track"></div>
                 <div class="tog-thumb"></div>
               </label>
             </div>
             <div class="in-pill" id="prefTempPill">
-              <input type="number" id="prefTemp" value="71" min="-20" max="200" step="1">
+              <input type="number" id="prefTemp" value="71" min="-20" max="200" step="1" autocomplete="nope">
               <span class="unit">°</span>
             </div>
           </div>
           <div class="field">
             <span class="field-lbl">Friction Factor</span>
             <div class="in-pill">
-              <input type="number" id="frictionFactor" value="30" min="0" max="100" step="1">
+              <input type="number" id="frictionFactor" value="30" min="0" max="100" step="1" autocomplete="nope">
               <span class="unit">°</span>
             </div>
           </div>
@@ -1632,7 +1632,7 @@
   // ── Reset all number inputs to their HTML defaults on load ──
   document.querySelectorAll('input[type="number"]').forEach(function(el) {
     el.value = el.defaultValue;
-    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocomplete', 'nope');
   });
 
   document.querySelectorAll('input').forEach(el => {
